@@ -2,6 +2,9 @@ import { useState } from "react";
 import { createUserWithEmailAndPassword } from "firebase/auth";
 import { auth } from "../firebase";
 import { useNavigate, Link } from "react-router-dom";
+import { showSuccessToast, showErrorToast } from "../utils/toastUtils"; 
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 export default function Signup() {
   const [email, setEmail] = useState("");
@@ -12,15 +15,16 @@ export default function Signup() {
     e.preventDefault();
     try {
       await createUserWithEmailAndPassword(auth, email, password);
-      alert("Signup successful!");
+      showSuccessToast("Signup successful!");
       navigate("/");
     } catch (error) {
-      alert(error.message);
+      showErrorToast(error.message);
     }
   };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500">
+      <ToastContainer /> 
       <div className="bg-white shadow-2xl rounded-xl p-8 w-full max-w-md transform transition duration-300 hover:scale-105">
         <h2 className="text-3xl font-bold text-center text-gray-800 mb-6">Create an Account</h2>
         <form onSubmit={handleSignup} className="space-y-4">

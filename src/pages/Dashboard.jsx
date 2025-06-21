@@ -1,13 +1,25 @@
+import { useEffect } from "react";
 import { useAuth } from "../context/AuthContext";
 import { adminEmails } from "../utils/adminList";
 import { signOut } from "firebase/auth";
 import { auth } from "../firebase";
-import { useNavigate } from "react-router-dom";
+import { useNavigate, useLocation } from "react-router-dom";
+import { ToastContainer } from "react-toastify";
+import { showSuccessToast } from "../utils/toastUtils";
+import "react-toastify/dist/ReactToastify.css";
 
 export default function Dashboard() {
   const { user } = useAuth();
   const isAdmin = adminEmails.includes(user?.email);
   const navigate = useNavigate();
+  const location = useLocation();
+
+  useEffect(() => {
+    if (location.state?.loginSuccess) {
+      showSuccessToast("Logged in successfully!");
+      navigate(location.pathname, { replace: true, state: {} });
+    }
+  }, [location, navigate]);
 
   const handleLogout = async () => {
     await signOut(auth);
@@ -20,6 +32,7 @@ export default function Dashboard() {
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500 px-4">
+      <ToastContainer />
       <div className="bg-white shadow-2xl rounded-xl p-8 w-full max-w-2xl">
         <div className="flex justify-between items-center mb-6">
           <h1 className="text-3xl font-bold text-gray-800">Dashboard</h1>

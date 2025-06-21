@@ -5,6 +5,9 @@ import { useNavigate } from "react-router-dom";
 import NewsChart from "../components/NewsChart";
 import jsPDF from "jspdf";
 import "jspdf-autotable"; 
+import { ToastContainer } from "react-toastify";
+import { showErrorToast, showSuccessToast } from "../utils/toastUtils";
+import "react-toastify/dist/ReactToastify.css";
 
 export default function News() {
   const [fetchError, setFetchError] = useState("");
@@ -34,10 +37,6 @@ export default function News() {
     setPayoutRate(value);
     localStorage.setItem("payoutRate", value);
   };
-  const showToast = (msg) => {
-    setToastMessage(msg);
-    setTimeout(() => setToastMessage(""), 3000); // Hide after 3 seconds
-  };
 
   const totalPayout = payoutRate * filteredArticles.length;
 
@@ -55,6 +54,7 @@ export default function News() {
   }));
 
 const handleExportCSV = () => {
+  try{
   const csvRows = [
     ["Title", "Author", "Published Date", "Payout ($)"],
     ...filteredArticles.map((article) => {
@@ -78,6 +78,11 @@ const handleExportCSV = () => {
   document.body.appendChild(link);
   link.click();
   document.body.removeChild(link);
+  showSuccessToast("CSV exported successfully!");
+  }
+ catch (error) {
+    showErrorToast("Failed to export CSV. Please try again later.");
+  }
 };
 const fetchDevToBlogs = async () => {
   try {
@@ -94,12 +99,14 @@ const fetchDevToBlogs = async () => {
     }));
   } catch (error) {
     console.error("Failed to fetch blogs:", error);
+    showErrorToast("Failed to fetch blogs. Please try again later.");
     return [];
   }
 };
 
 
 const handleExportPDF = async () => {
+  try{
   const jsPDFModule = await import("jspdf");
   const autoTable = (await import("jspdf-autotable")).default;
 
@@ -119,10 +126,12 @@ const handleExportPDF = async () => {
 
   doc.text("Article Payout Summary", 14, 16);
   doc.save("articles_payout_summary.pdf");
+  showSuccessToast("PDF exported successfully!");
+  }
+  catch (error) {
+    showErrorToast("Failed to export PDF. Please try again later.");
+  }
 };
-
-
-
 
   const apiKey = import.meta.env.VITE_GUARDIAN_API_KEY;
 
@@ -153,9 +162,11 @@ const handleExportPDF = async () => {
     } else {
       setArticles((prev) => [...prev, ...combined]);
       setFilteredArticles((prev) => [...prev, ...combined]);
+      /*showSuccessToast("Articles fetched successfully!");*/
     }
   } catch (err) {
     console.error("Failed to fetch news or blogs:", err);
+    showErrorToast("Failed to fetch articles. Please try again later.");
     setFetchError("Failed to fetch articles. Please try again later.");
   } finally {
     setLoading(false);
@@ -199,6 +210,7 @@ const handleExportPDF = async () => {
 
   return (
     <div className="min-h-screen bg-gradient-to-r from-purple-500 via-indigo-600 to-blue-500 px-4 py-8">
+      <ToastContainer />
       <div className="max-w-5xl mx-auto bg-white bg-opacity-90 backdrop-blur-lg shadow-xl rounded-xl p-6">
        <div className="relative mb-6 h-10 flex items-center justify-end">
   <h1 className="absolute left-1/2 transform -translate-x-1/2 text-3xl font-bold text-gray-800">

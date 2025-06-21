@@ -2,6 +2,9 @@ import { useState } from "react";
 import { signInWithEmailAndPassword } from "firebase/auth";
 import { auth } from "../firebase";
 import { useNavigate, Link } from "react-router-dom";
+import { showSuccessToast, showErrorToast } from "../utils/toastUtils"; 
+import { ToastContainer } from "react-toastify";
+import "react-toastify/dist/ReactToastify.css";
 
 export default function Login() {
   const [email, setEmail] = useState("");
@@ -12,19 +15,18 @@ export default function Login() {
     e.preventDefault();
     try {
       await signInWithEmailAndPassword(auth, email, password);
-      alert("Login successful!");
-      navigate("/dashboard");
+      navigate("/dashboard", { state: { loginSuccess: true } });
     } catch (error) {
-      alert(error.message);
+      showErrorToast(error.message);
     }
   };
 
   return (
     <div className="min-h-screen flex items-center justify-center bg-gradient-to-r from-blue-500 via-purple-500 to-pink-500">
+      <ToastContainer /> 
       <div className="bg-white shadow-2xl rounded-xl p-8 w-full max-w-md transform transition duration-300 hover:scale-105">
         <h2 className="text-3xl font-bold text-center text-gray-800 mb-4">Welcome Back</h2>
-        
-        {/* Admin Login Info */}
+
         <p className="text-sm text-center text-gray-500 mb-4">
           <strong>Admin Login:</strong> <br />
           <span className="text-gray-700">Email:</span> <code>admin@gmail.com</code> &nbsp;|&nbsp;
@@ -55,6 +57,7 @@ export default function Login() {
             Log In
           </button>
         </form>
+
         <p className="mt-6 text-sm text-center text-gray-500">
           Don’t have an account?{" "}
           <Link to="/signup" className="text-blue-600 hover:underline">
@@ -65,4 +68,3 @@ export default function Login() {
     </div>
   );
 }
-

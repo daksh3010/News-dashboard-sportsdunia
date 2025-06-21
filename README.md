@@ -110,7 +110,7 @@ src/
     VITE_FIREBASE_APP_ID=your_app_id
     VITE_FIREBASE_STORAGE_BUCKET=your_storage_bucket
     VITE_FIREBASE_MESSAGING_SENDER_ID=your_messaging_sender_id
-    VITE_NEWS_API_KEY=your_newsapi_key_here
+    VITE_GUARDIAN_API_KEY=your_guardianapi_key_here
 
 4. Start the development server:
     npm run dev

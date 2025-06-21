@@ -124,20 +124,25 @@ const handleExportPDF = async () => {
 
 
 
-  const apiKey = import.meta.env.VITE_NEWS_API_KEY;
+  const apiKey = import.meta.env.VITE_GUARDIAN_API_KEY;
 
   const fetchNews = async (pageNum = 1) => {
   setLoading(true);
   try {
     const res = await fetch(
-      `https://newsapi.org/v2/top-headlines?country=us&pageSize=10&page=${pageNum}&apiKey=${apiKey}`
+      `https://content.guardianapis.com/search?api-key=${apiKey}&page-size=10&show-fields=byline,headline,short-url,publication`
     );
     const data = await res.json();
 
-    const newsArticles = data.articles.map((article) => ({
-      ...article,
-      type: "News"
+    const newsArticles = data.response.results.map((article) => ({
+      title: article.webTitle,
+      author: article.fields?.byline || "Unknown",
+      publishedAt: article.webPublicationDate,
+      source: { name: "The Guardian" },
+      url: article.webUrl,
+      type: "News",
     }));
+
 
     const blogArticles = await fetchDevToBlogs();
 
